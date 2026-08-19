@@ -21,7 +21,7 @@ jobs:
 
       - name: Deploy React Frontend to IIS Folder
         run: |
-          Copy-Item -Path "client/dist/*" -Destination 'C:\SUNUCU_PAKETI\TurTakip_Arayuz\dist' -Recurse -Force
+          Copy-Item -Path "dist\*" -Destination 'C:\SUNUCU_PAKETI\TurTakip_Arayuz\dist' -Recurse -Force
           Copy-Item -Path "zyronova_premium.html" -Destination 'C:\SUNUCU_PAKETI\TurTakip_Arayuz\dist\' -Force
 
       - name: Deploy Node.js API
