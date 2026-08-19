@@ -1,0 +1,34 @@
+node_modules/
+.env
+.DS_Store
+scratch/
+npm-debug.log
+yarn-error.log
+.gemini/
+
+# Güvenlik: Debug ve log dosyaları
+*.txt
+*.log
+server/check_*.js
+server/fix_*.js
+server/reset_*.js
+server/seed_*.js
+server/test_*.js
+server/update_*.js
+server/cleanup*.js
+server/cleanup*.bat
+server/scratch/
+
+# Production build
+client/dist/
+dist/
+
+# Env files (Güvenlik için çok önemli)
+*.env*
+.env.development
+.env.production
+
+# Yanlışlıkla oluşan veya büyük dosyalar
+client/client/
+client/5173
+*.mp4

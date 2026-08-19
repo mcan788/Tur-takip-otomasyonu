@@ -1,0 +1,341 @@
+:root {
+  --primary-bg: #f8fafc;
+  --secondary-bg: #ffffff;
+  --accent-color: #3b82f6;
+  --accent-hover: #2563eb;
+  --text-main: #1e293b;
+  --text-muted: #475569;
+  --border-color: #e2e8f0;
+  --success: #10b981;
+  --error: #ef4444;
+  --warning: #f59e0b;
+
+  /* ─── PERFORMANS: Sadece GPU composite özellikleri (transform + opacity) ─── */
+  --transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-color: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                      color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                      border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-shadow: box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── GPU HIZLANDIRMA: Tüm animasyonlu elementler ─── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ─── YÜKSEK REFRESH RATE DESTEĞİ ─── */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+html, body {
+  height: 100%;
+  /* Removed overflow: hidden to fix mobile scrolling */
+}
+
+body {
+  background-color: var(--primary-bg);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* Yüksek DPI ekranlar için */
+  -webkit-text-size-adjust: 100%;
+}
+
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.glass {
+  background: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  /* box-shadow transition yerine pseudo-element opacity ile ─ GPU dostu */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* ─── BUTONLAR: transform tabanlı hover (GPU compositor) ─── */
+.btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--secondary-bg);
+  color: var(--text-main);
+  transition: var(--transition-color), var(--transition-shadow);
+  /* GPU katmanına al */
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn:active {
+  transform: translateY(0px) scale(0.98);
+  transition: transform 0.08s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary {
+  background: var(--accent-color);
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+/* ─── INPUT: focus ring GPU dostu ─── */
+input, select, textarea {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-main);
+  margin-bottom: 15px;
+  outline: none;
+  font-size: 0.9rem;
+  transition: border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Mobilde zoom engelle */
+  font-size: max(16px, 0.9rem);
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+/* ─── MODAL: GPU katmanında aç/kapat ─── */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  /* Backdrop blur GPU'da çalışır */
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  animation: overlayIn 0.18s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal-content {
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 30px;
+  background: var(--secondary-bg);
+  border-radius: 12px;
+  /* transform ile aç — GPU compositor, layout/paint yok */
+  animation: modalIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ─── TABLO ─── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 2px solid var(--border-color);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* tr hover: background-color geçişi GPU dostu değil ama kaçınılmaz */
+tr {
+  transition: background-color 0.12s ease;
+}
+
+tr:hover td {
+  background: #f1f5f9;
+}
+
+/* ─── SİDEBAR ─── */
+.sidebar {
+  background: var(--secondary-bg) !important;
+  border-right: 1px solid var(--border-color) !important;
+}
+
+.super-header h1 {
+  color: var(--text-main);
+}
+
+.mobile-header-bar {
+  background: var(--secondary-bg) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+/* ─── SAYFA LAYOUT ─── */
+.page-layout {
+  display: flex;
+  background: var(--primary-bg);
+  min-height: 100vh;
+}
+
+.page-main {
+  flex: 1;
+  padding: 40px;
+  min-height: 100vh;
+  min-width: 0;
+  /* Mobil scroll smooth */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ─── KART / PANEL HOVER EFEKTİ ─── */
+.card-hover {
+  transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.09);
+}
+
+/* ─── NAVİGASYON LİNKİ ─── */
+.nav-link-item {
+  transition: background-color 0.12s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.nav-link-item:active {
+  transform: scale(0.97);
+  transition: transform 0.06s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  display: block;
+  width: 100%;
+}
+
+/* ─── GLOBAL MOBİL RESPONSIVE ─── */
+@media (max-width: 768px) {
+  .page-main {
+    padding: 24px 16px !important;
+    padding-top: 72px !important;
+    width: 100% !important;
+  }
+
+  .modal-content {
+    width: 95% !important;
+    padding: 20px !important;
+    max-height: 90vh !important;
+  }
+
+  .header-row-mobile {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 16px !important;
+  }
+
+  h1 { font-size: 22px !important; }
+  h2 { font-size: 18px !important; }
+
+  td, th { padding: 10px 8px !important; }
+
+  /* Dokunma hedeflerini büyüt (minimum 44px) */
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-main {
+    padding: 12px !important;
+    padding-top: 68px !important;
+  }
+}
+
+/* ─── YÜKSEK REFRESH RATE (120Hz / 144Hz) OPTİMİZASYONU ─── */
+@media (min-resolution: 2dppx) {
+  /* Retina/yüksek DPI ekranlar */
+  .btn, .card-hover, .nav-link-item {
+    -webkit-font-smoothing: subpixel-antialiased;
+  }
+}
+
+/* ─── REDUCED MOTION ERİŞİLEBİLİRLİK ─── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── YENİ RESPONSIVE SINIFLAR ─── */
+.responsive-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.responsive-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.responsive-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.responsive-grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; }
+.responsive-flex-header { display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; }
+.responsive-flex-row { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+
+@media (max-width: 768px) {
+  .responsive-grid-2, .responsive-grid-3, .responsive-grid-4, .responsive-grid-6 { grid-template-columns: 1fr !important; }
+  .responsive-flex-header { flex-direction: column !important; align-items: stretch !important; }
+  .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; display: block; width: 100%; }
+}
