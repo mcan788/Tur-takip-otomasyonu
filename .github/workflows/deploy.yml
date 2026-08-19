@@ -1,0 +1,35 @@
+﻿name: Deploy Tur Takip to Windows Server
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Build React Client
+        working-directory: ./client
+        run: |
+          npm install
+          npm run build
+
+      - name: Deploy React Frontend to IIS Folder
+        run: |
+          Copy-Item -Path "client/dist/*" -Destination "C:\SUNUCU_PAKETI\TurTakip_Arayuz\dist" -Recurse -Force
+          Copy-Item -Path "zyronova_premium.html" -Destination "C:\SUNUCU_PAKETI\TurTakip_Arayuz\dist\" -Force
+
+      - name: Deploy Node.js API
+        run: |
+          Copy-Item -Path "server\*" -Destination "C:\SUNUCU_PAKETI\TurTakip_API" -Recurse -Force
+          
+      - name: Install API Dependencies and Restart
+        working-directory: "C:\SUNUCU_PAKETI\TurTakip_API"
+        run: |
+          npm install
+          pm2 restart all || echo "PM2'de yeniden baslatilacak aktif uygulama bulunamadi."
