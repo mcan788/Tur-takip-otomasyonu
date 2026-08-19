@@ -32,4 +32,5 @@ jobs:
         working-directory: 'C:\SUNUCU_PAKETI\TurTakip_API'
         run: |
           npm install
-          pm2 restart all || echo "PM2'de yeniden baslatilacak aktif uygulama bulunamadi."
+          pm2 restart all
+        continue-on-error: true
