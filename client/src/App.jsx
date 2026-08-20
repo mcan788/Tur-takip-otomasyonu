@@ -74,10 +74,13 @@ const SSORedirect = () => {
   React.useEffect(() => {
     if (!adminToken) { window.location.replace('/'); return; }
     const isLocal = window.location.port === '3000' || window.location.port === '5173' || window.location.port === '5174';
-    const ssoUrl = isLocal
-      ? `http://${window.location.hostname}:5001/sso-login?token=${adminToken}`
-      : `/sso-login?token=${adminToken}`;
-    window.location.href = ssoUrl;
+    const baseUrl = isLocal ? `http://${window.location.hostname}:5001` : '';
+    // POST ile gönder (IIS bu isteği Python'a yönlendirir), token URL param olarak da ekleniyor
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `${baseUrl}/sso-login?token=${adminToken}`;
+    document.body.appendChild(form);
+    form.submit();
   }, [adminToken]);
   return <div style={{display:'flex',justifyContent:'center',alignItems:'center',height:'100vh',fontWeight:'bold',color:'var(--accent-color)'}}>Rent A Car modülüne geçiş yapılıyor...</div>;
 };
@@ -118,3 +121,4 @@ function App() {
 }
 
 export default App;
+
