@@ -224,7 +224,7 @@ const login = async (req, res) => {
             return res.status(400).json({ error: 'Güvenlik sorusu cevabı yanlış!' });
         }
     } catch (err) {
-        console.error('CAPTCHA DECRYPT ERROR:', err);
+        console.error('CAPTCHA DECRYPT ERROR:', err.message, err.stack, req.body);
         return res.status(400).json({ error: 'Geçersiz güvenlik sorusu doğrulama verisi.' });
     }
 
