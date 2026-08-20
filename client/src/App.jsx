@@ -96,7 +96,8 @@ const SSORedirect = () => {
     }
     const form = document.createElement('form');
     form.method = 'POST';
-    form.action = `http://${window.location.hostname}:5001/sso-login`;
+    const isLocal = window.location.port === '3000' || window.location.port === '5173' || window.location.port === '5174';
+    form.action = isLocal ? `http://${window.location.hostname}:5001/sso-login` : `/sso-login`;
     
     const input = document.createElement('input');
     input.type = 'hidden';
@@ -161,4 +162,5 @@ function App() {
 }
 
 export default App;
+
 
