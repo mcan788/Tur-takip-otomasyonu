@@ -1,4 +1,4 @@
-﻿name: Deploy Tur Takip to Windows Server
+name: Deploy Tur Takip to Windows Server
 
 on:
   push:
@@ -21,8 +21,8 @@ jobs:
 
       - name: Deploy React Frontend to IIS Folder
         run: |
-          Copy-Item -Path "dist\*" -Destination 'C:\SUNUCU_PAKETI\TurTakip_Arayuz\dist' -Recurse -Force
-          Copy-Item -Path "zyronova_premium.html" -Destination 'C:\SUNUCU_PAKETI\TurTakip_Arayuz\dist\' -Force
+          Copy-Item -Path "client\dist\*" -Destination 'C:\SUNUCU_PAKETI\TurTakip_Arayuz\dist' -Recurse -Force
+          Copy-Item -Path "client\public\zyronova_premium.html" -Destination 'C:\SUNUCU_PAKETI\TurTakip_Arayuz\dist\' -Force
 
       - name: Deploy Node.js API
         run: |
@@ -34,3 +34,4 @@ jobs:
           npm install
           pm2 restart all
         continue-on-error: true
+
