@@ -208,3 +208,4 @@ process.on('unhandledRejection', (reason, promise) => {
     // Node.js varsayılan davranışında çöker; burada loglayıp devam etmesini sağlıyoruz.
 });
 
+
