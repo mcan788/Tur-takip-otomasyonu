@@ -62,7 +62,7 @@ if (token) {
     // direkt olarak Module Selector'a yönlendir
     const source = params.get('source');
     if ((decoded.role === 'SUPERADMIN' || decoded.role === 'Admin') && source !== 'rentacar') {
-      window.location.href = '/module-selector';
+      window.location.href = '/super-admin/module-selector';
     }
   } catch (e) {
     console.error('Token decode hatası:', e);
@@ -133,7 +133,7 @@ function App() {
             <Route path="/zy-yonetim-merkezi" element={<HardRedirect />} />
 
             {/* Seçim Ekranı */}
-            <Route path="/module-selector" element={<ProtectedRoute><ModuleSelector /></ProtectedRoute>} />
+            <Route path="/super-admin/module-selector" element={<ProtectedRoute><ModuleSelector /></ProtectedRoute>} />
 
             {/* Korumalı Süper Admin paneli */}
             <Route path="/super-admin" element={<ProtectedRoute><SuperAdminHome /></ProtectedRoute>} />
@@ -161,3 +161,4 @@ function App() {
 }
 
 export default App;
+

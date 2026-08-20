@@ -43,7 +43,7 @@ const Login = () => {
       } else if (data.role === 'SUPERADMIN' || data.role === 'ADMIN') {
         localStorage.setItem('token', data.token);
         localStorage.setItem('role', data.role);
-        navigate('/module-selector');
+        navigate('/super-admin/module-selector');
       } else {
         setError('Bu panel sadece Yönetim/Merkez personeli içindir. Acente sahibiyseniz lütfen /acente-giris sayfasını kullanın.');
       }
@@ -62,7 +62,7 @@ const Login = () => {
       const data = response.data;
       setShow2FA(false);
       localStorage.setItem('token', data.token);
-      navigate('/module-selector');
+      navigate('/super-admin/module-selector');
     } catch (err) {
       setError(err.response?.data?.error || '2FA doğrulama kodu hatalı veya süresi dolmuş.');
     }
@@ -80,7 +80,7 @@ const Login = () => {
       
       if (response.status === 200) {
         setMustChange(false);
-        navigate('/module-selector');
+        navigate('/super-admin/module-selector');
       }
     } catch (err) {
       setError(err.response?.data?.error || 'Şifre değiştirilemedi.');
@@ -268,3 +268,4 @@ const Login = () => {
 };
 
 export default Login;
+
