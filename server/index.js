@@ -36,9 +36,7 @@ app.use(cors({
     origin: (origin, callback) => {
         // Origin yoksa (server-to-server, Postman vb.)
         if (!origin) {
-            // Sadece development ortamında origin'siz isteklere izin ver
-            if (process.env.NODE_ENV !== 'production') return callback(null, true);
-            return callback(new Error(`CORS politikası: Kaynak (Origin) belirtilmemiş isteklere izin verilmiyor.`));
+            return callback(null, true);
         }
 
         // Whitelist kontrolü
