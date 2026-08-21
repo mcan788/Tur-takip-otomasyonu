@@ -247,10 +247,10 @@ const login = async (req, res) => {
                 let pyData;
                 try {
                     pyData = JSON.parse(pyText);
-                    // Sadece MASTER ve RENT_A_CAR için Python'a delege et.
-                    // TOUR_TRACKING kullanıcıları Node.js (TurMasterDB) üzerinden authenticate olmalıdır,
-                    // çünkü Node.js'in ürettiği token yapısı farklıdır.
-                    if (pyData && !pyData.error && (pyData.targetModule === 'MASTER' || pyData.targetModule === 'RENT_A_CAR')) {
+                    // Sadece RENT_A_CAR için Python'a delege et.
+                    // MASTER (SuperAdmin) kullanıcılar Node.js'in SystemUsers kontrolünden geçmeli,
+                    // çünkü Node.js role='SUPERADMIN' döndürür ve React module-selector'a yönlendirir.
+                    if (pyData && !pyData.error && pyData.targetModule === 'RENT_A_CAR') {
                         return res.json(pyData);
                     }
                 } catch (e) {
