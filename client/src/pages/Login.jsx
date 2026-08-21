@@ -37,11 +37,14 @@ const Login = () => {
       
       
 
-      if (data.role === 'SUPERADMIN' || data.role === 'ADMIN') {
+      const roleUpper = (data.role || '').toUpperCase();
+      const isMasterAdmin = roleUpper === 'SUPERADMIN' || roleUpper === 'ADMIN' || data.targetModule === 'MASTER';
+      
+      if (isMasterAdmin) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('role', data.role);
         navigate('/super-admin/module-selector');
-      } else if (data.targetModule === 'MASTER' || data.targetModule === 'RENT_A_CAR') {
+      } else if (data.targetModule === 'RENT_A_CAR') {
         const isLocal = window.location.port === '3000' || window.location.port === '5173' || window.location.port === '5174';
         const baseUrl = isLocal ? `http://${window.location.hostname}:5001` : '';
         window.location.href = `${baseUrl}/sso-login?token=${data.token}`;
