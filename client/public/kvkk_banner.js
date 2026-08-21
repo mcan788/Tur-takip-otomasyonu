@@ -3,6 +3,11 @@
     if (localStorage.getItem('zyronova_kvkk_accepted') === 'true') {
         return;
     }
+    
+    // Modül seçim ekranında gösterme
+    if (window.location.pathname === '/super-admin/module-selector') {
+        return;
+    }
 
     // Stil tanimlamasi
     const style = document.createElement('style');
