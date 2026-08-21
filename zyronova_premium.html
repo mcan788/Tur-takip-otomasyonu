@@ -3795,9 +3795,9 @@
                     localStorage.setItem('zyronova_token', data.token);
                     localStorage.setItem('zyronova_user', JSON.stringify(data));
 
-                    // SUPERADMIN ve Admin rolü → React Super Admin paneli
-                    if (data.role === 'SUPERADMIN' || data.role === 'Admin') {
-                        window.location.href = `${REACT_APP_URL}/super-admin?token=${data.token}&role=${data.role}`;
+                    // SUPERADMIN ve Admin rolü → React Super Admin Modül Seçim Ekranı
+                    if (data.role === 'SUPERADMIN' || data.role === 'Admin' || targetModule === 'MASTER') {
+                        window.location.href = `${REACT_APP_URL}/super-admin/module-selector?token=${data.token}&role=${data.role}`;
                     } else {
                         // Master personeli (role_id 13 vb.) → Python Master Dashboard'a SSO ile yönlendir
                         window.location.href = `${PYTHON_APP_URL}/sso-login?token=${data.token}`;
@@ -4340,4 +4340,3 @@
 </body>
 
 </html>
-
