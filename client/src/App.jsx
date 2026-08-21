@@ -1,4 +1,4 @@
-﻿import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 const Login = lazy(() => import('./pages/Login'));
@@ -49,7 +49,7 @@ if (token) {
     if (decoded.subdomain) localStorage.setItem('agencyName', decoded.subdomain);
     if (decoded.staffId) localStorage.setItem('staffId', decoded.staffId);
     const source = params.get('source');
-    if ((decoded.role === 'SUPERADMIN' || decoded.role === 'Admin') && source !== 'rentacar') {
+    if ((decoded.role === 'SUPERADMIN' || decoded.role === 'Admin') && source !== 'rentacar' && window.location.pathname !== '/super-admin' && window.location.pathname !== '/super-admin/module-selector') {
       window.location.href = '/super-admin/module-selector';
     }
   } catch (e) { console.error('Token decode error:', e); }
