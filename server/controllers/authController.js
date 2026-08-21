@@ -236,7 +236,7 @@ const login = async (req, res) => {
         // React portalından gelen login isteklerinde "requestedModule" her zaman gelmeyebilir.
         // Bu yüzden öncelikle Python'a soruyoruz. Python'da varsa (Master veya Rent A Car), oradan devam ediyoruz.
         try {
-            const pyResponse = await fetch(`http://127.0.0.1:5001/api/auth/login`, {
+            const pyResponse = await fetch(`http://127.0.0.1:8080/api/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
