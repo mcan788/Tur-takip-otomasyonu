@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import api from '../services/api';
 import Sidebar from '../components/Sidebar';
 import { Search, Plus, Send, Paperclip, ChevronRight, MessageSquare, Tag, Clock, Hash, Headphones, Trash2, XCircle, CheckCircle, AlertCircle } from 'lucide-react';
-const API_BASE_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3000/api`;
+const isProd = window.location.hostname === 'zyronova.com';
+const API_BASE_URL = import.meta.env.VITE_API_URL || (isProd ? 'https://zyronova.com/api' : `http://${window.location.hostname}:3000/api`);
 
 const SupportPage = () => {
   const role = localStorage.getItem('role');
