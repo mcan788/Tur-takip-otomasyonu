@@ -1,0 +1,80 @@
+[
+  {
+    "COLUMN_NAME": "Id"
+  },
+  {
+    "COLUMN_NAME": "TurAdi"
+  },
+  {
+    "COLUMN_NAME": "Kategori"
+  },
+  {
+    "COLUMN_NAME": "Aciklama"
+  },
+  {
+    "COLUMN_NAME": "YetiskinFiyatiEUR"
+  },
+  {
+    "COLUMN_NAME": "AktifMi"
+  },
+  {
+    "COLUMN_NAME": "OlusturmaTarihi"
+  },
+  {
+    "COLUMN_NAME": "VideoUrl"
+  },
+  {
+    "COLUMN_NAME": "Gorseller"
+  },
+  {
+    "COLUMN_NAME": "GirisMetni"
+  },
+  {
+    "COLUMN_NAME": "NedenBizMetni"
+  },
+  {
+    "COLUMN_NAME": "NedenBizVideo"
+  },
+  {
+    "COLUMN_NAME": "ProgramJson"
+  },
+  {
+    "COLUMN_NAME": "ServisJson"
+  },
+  {
+    "COLUMN_NAME": "KapakFotografi"
+  },
+  {
+    "COLUMN_NAME": "Tarih"
+  },
+  {
+    "COLUMN_NAME": "Translations"
+  },
+  {
+    "COLUMN_NAME": "SilindiMi"
+  },
+  {
+    "COLUMN_NAME": "YetiskinFiyatiUSD"
+  },
+  {
+    "COLUMN_NAME": "CocukFiyatiUSD"
+  },
+  {
+    "COLUMN_NAME": "BebekFiyatiUSD"
+  },
+  {
+    "COLUMN_NAME": "CocukYasAraligi"
+  },
+  {
+    "COLUMN_NAME": "BebekYasAraligi"
+  },
+  {
+    "COLUMN_NAME": "CocukFiyatiEUR"
+  },
+  {
+    "COLUMN_NAME": "BebekFiyatiEUR"
+  },
+  {
+    "COLUMN_NAME": "Bolge"
+  }
+]

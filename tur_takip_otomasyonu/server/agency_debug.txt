@@ -1,0 +1,18 @@
+[
+  {
+    "AgencyID": 2,
+    "Username": "Ali DEMIR",
+    "AgencyName": "Melis TOUR",
+    "AgencyDBName": "Legacy_DB_2",
+    "ParentAgencyID": null,
+    "IsBranch": null
+  },
+  {
+    "AgencyID": 1012,
+    "Username": "OkurcalarGrandBazaar",
+    "AgencyName": "Okurcalar GrandBazaar",
+    "AgencyDBName": "Agency_OkurcalarGrandBazaar_1778917890197_DB",
+    "ParentAgencyID": 2,
+    "IsBranch": true
+  }
+]

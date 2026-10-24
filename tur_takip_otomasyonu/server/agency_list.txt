@@ -1,0 +1,12 @@
+[
+  {
+    "AgencyID": 2,
+    "Username": "Ali DEMIR",
+    "OwnerName": "MelisTour"
+  },
+  {
+    "AgencyID": 1012,
+    "Username": "OkurcalarGrandBazaar",
+    "OwnerName": "Muhammet can demir"
+  }
+]

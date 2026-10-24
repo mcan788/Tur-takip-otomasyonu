@@ -1,0 +1,5 @@
+[attachDB Error] AlanyaTurDB: Error: [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Login failed for user 'DESKTOP-JCL5QHP\MCan'.,Error: [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Cannot open database "AlanyaTurDB" requested by the login. The login failed.
+Stack: ConnectionError: Error: [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Login failed for user 'DESKTOP-JCL5QHP\MCan'.,Error: [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Cannot open database "AlanyaTurDB" requested by the login. The login failed.
+    at PrivateConnection.callback2 (C:\Users\MCan\Desktop\Muhammet Can\Tur_takip_sistemi\server\node_modules\mssql\lib\msnodesqlv8\connection-pool.js:46:17)
+    at Immediate.<anonymous> (C:\Users\MCan\Desktop\Muhammet Can\Tur_takip_sistemi\server\node_modules\msnodesqlv8\lib\connection.js:43:14)
+    at process.processImmediate (node:internal/timers:504:21)

@@ -1,0 +1,7 @@
+Tables in AlanyaTurDB:
+- Users: 1 rows
+- Regions: 3 rows
+- Turlar: 27 rows
+- Giderler: 1 rows
+- Reservations: 4633 rows
+- Expenses: 2 rows

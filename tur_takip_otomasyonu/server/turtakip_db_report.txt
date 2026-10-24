@@ -1,0 +1,3 @@
+Database: TurTakipDB
+Tours: 0
+Bookings: 0

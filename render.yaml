@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: zyronova-rentacar-turtakip
+    runtime: docker
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: PYTHON_PORT
+        value: 8080
+      - key: USE_MSSQL
+        value: "false"
+      - key: JWT_SECRET
+        value: zyronova_jwt_secret_key_7a9d8c6b2e1f4a
+      - key: SECRET_KEY
+        value: zyronova-enterprise-secret-key-2026-secure-v9x8m2k4p7q1w5e3r6t0y
+      - key: ENCRYPTION_KEY
+        value: 9u3g8htIZALnQwM61s_LvKkYkYN-1YdlCaMgksKxiUQ=

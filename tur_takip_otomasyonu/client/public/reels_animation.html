@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zyronova Reels Animation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #030408;
+            --bg-card: rgba(10, 14, 28, 0.65);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(77, 121, 255, 0.15);
+            --text-white: #ffffff;
+            --text-muted: #94a3b8;
+            --primary: #4d79ff;
+            --primary-glow: rgba(77, 121, 255, 0.35);
+            --accent: #ff4fd8;
+            --accent-glow: rgba(255, 79, 216, 0.25);
+            --green: #10b981;
+            --green-glow: rgba(16, 185, 129, 0.2);
+            --yellow: #f59e0b;
+            --yellow-glow: rgba(245, 158, 11, 0.2);
+            --red: #ef4444;
+            --red-glow: rgba(239, 68, 68, 0.4);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .reels-wrapper {
+            width: 450px;
+            height: 800px;
+            position: relative;
+            transform: scale(min(calc(100vw / 450), calc(100vh / 800)));
+            transform-origin: center center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            background-color: var(--bg-dark);
+        }
+
+        /* ── DYNAMIC 3D PERSPECTIVE BACKGROUND ── */
+        .ambient-glows {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .glow-circle {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.5;
+            mix-blend-mode: screen;
+            will-change: transform;
+        }
+
+        .glow-1 {
+            top: -10%;
+            left: -10%;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, var(--primary) 0%, transparent 80%);
+            animation: floatGlow1 12s infinite alternate ease-in-out;
+        }
+
+        .glow-2 {
+            bottom: -50px;
+            right: -50px;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, var(--accent) 0%, transparent 80%);
+            animation: floatGlow2 10s infinite alternate-reverse ease-in-out;
+        }
+
+        .glow-3 {
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%);
+        }
+
+        @keyframes floatGlow1 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(40px, 40px) scale(1.2); }
+        }
+
+        @keyframes floatGlow2 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-30px, -40px) scale(1.15); }
+        }
+
+        /* Animated 3D Grid Background */
+        .grid-3d {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 30px 30px;
+            transform: perspective(500px) rotateX(60deg) translate3d(0, 0, 0);
+            z-index: 2;
+            animation: gridMove 20s infinite linear;
+            will-change: transform;
+        }
+
+        @keyframes gridMove {
+            0% { transform: perspective(500px) rotateX(60deg) translate3d(0, 0, 0); }
+            100% { transform: perspective(500px) rotateX(60deg) translate3d(0, 30px, 0); }
+        }
+
+        /* ── BRAND WATERMARK ── */
+        .brand-watermark {
+            position: absolute;
+            top: 25px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .brand-logo-mini {
+            width: 26px;
+            height: 26px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 0.95rem;
+            color: #fff;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .brand-name-mini {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.05rem;
+            letter-spacing: 0.8px;
+            background: linear-gradient(to right, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ── SLIDE ORCHESTRATION ── */
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            padding: 70px 25px 40px 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+            opacity: 0;
+            transform: translate3d(0, 20px, 0) scale(0.96);
+            pointer-events: none;
+            will-change: transform, opacity;
+        }
+
+        /* Slide Titles */
+        .slide-title-container {
+            width: 100%;
+            text-align: center;
+            margin-top: 15px;
+            margin-bottom: 30px;
+        }
+
+        .slide-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.9rem;
+            font-weight: 800;
+            line-height: 1.25;
+            background: linear-gradient(135deg, #ffffff 70%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .highlight-text {
+            display: inline-block;
+            font-weight: 900;
+        }
+
+        .highlight-accent {
+            background: linear-gradient(135deg, #ff4fd8 10%, #a855f7 90%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(255, 79, 216, 0.15);
+        }
+
+        .highlight-primary {
+            background: linear-gradient(135deg, #4d79ff 10%, #00f2fe 90%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(77, 121, 255, 0.15);
+        }
+
+        .highlight-green {
+            background: linear-gradient(135deg, #10b981 10%, #059669 90%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Content Area */
+        .content-container {
+            flex-grow: 1;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 800px;
+        }
+
+        /* Slide Footer info */
+        .slide-footer-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            font-weight: 600;
+            text-transform: uppercase;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 15px;
+            width: 80%;
+            text-align: center;
+        }
+
+        /* ── TIMING CONTROL (32 Seconds Loop) ── */
+        .slide-1 { animation: displaySlide1 32s infinite; }
+        .slide-2 { animation: displaySlide2 32s infinite; }
+        .slide-3 { animation: displaySlide3 32s infinite; }
+        .slide-4 { animation: displaySlide4 32s infinite; }
+
+        @keyframes displaySlide1 {
+            0% { opacity: 0; transform: translate3d(0, 20px, 0) scale(0.96); pointer-events: none; }
+            1.5%, 23.5% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); pointer-events: auto; }
+            25%, 100% { opacity: 0; transform: translate3d(0, -20px, 0) scale(1.04); pointer-events: none; }
+        }
+
+        @keyframes displaySlide2 {
+            0%, 25% { opacity: 0; transform: translate3d(0, 20px, 0) scale(0.96); pointer-events: none; }
+            26.5%, 48.5% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); pointer-events: auto; }
+            50%, 100% { opacity: 0; transform: translate3d(0, -20px, 0) scale(1.04); pointer-events: none; }
+        }
+
+        @keyframes displaySlide3 {
+            0%, 50% { opacity: 0; transform: translate3d(0, 20px, 0) scale(0.96); pointer-events: none; }
+            51.5%, 73.5% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); pointer-events: auto; }
+            75%, 100% { opacity: 0; transform: translate3d(0, -20px, 0) scale(1.04); pointer-events: none; }
+        }
+
+        @keyframes displaySlide4 {
+            0%, 75% { opacity: 0; transform: translate3d(0, 20px, 0) scale(0.96); pointer-events: none; }
+            76.5%, 98.5% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); pointer-events: auto; }
+            100% { opacity: 0; transform: translate3d(0, -20px, 0) scale(1.04); pointer-events: none; }
+        }
+
+
+        /* ── SLIDE 1: CHAOS PAIN & TIMING ── */
+        .chaos-pain-card {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 32px 24px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            transform: rotateX(8deg);
+            position: relative;
+            animation: slide1CardEffect 32s infinite;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        @keyframes slide1CardEffect {
+            0%, 15% { transform: rotateX(8deg) scale(1); filter: blur(0); opacity: 1; }
+            20% { transform: rotateX(15deg) scale(0.95); filter: blur(4px); opacity: 0.6; }
+            22%, 100% { transform: rotateX(15deg) scale(0.9); filter: blur(10px); opacity: 0.2; }
+        }
+
+        .timer-counter-box {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1.5px solid rgba(239, 68, 68, 0.25);
+            padding: 12px 24px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 
+                0 0 25px rgba(239, 68, 68, 0.15),
+                inset 0 0 15px rgba(239, 68, 68, 0.05);
+            transform-style: preserve-3d;
+            transform: translateZ(20px);
+            will-change: transform;
+            z-index: 10;
+        }
+
+        .timer-counter-box.green {
+            border-color: rgba(16, 185, 129, 0.3);
+            box-shadow: 
+                0 0 25px rgba(16, 185, 129, 0.25),
+                inset 0 0 15px rgba(16, 185, 129, 0.05);
+            margin: 20px auto;
+            animation: pulseGreen 1.5s infinite ease-in-out;
+        }
+
+        .timer-icon {
+            font-size: 1.2rem;
+        }
+
+        .timer-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .ticking-timer-red {
+            color: #ef4444;
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+
+        .ticking-timer-red::after {
+            content: "00:00";
+            animation: countTime 32s infinite steps(1);
+        }
+
+        @keyframes countTime {
+            0%, 100% { content: "00:00"; }
+            2% { content: "00:15"; }
+            5% { content: "00:45"; }
+            8% { content: "01:20"; }
+            11% { content: "02:10"; }
+            14% { content: "03:05"; }
+            17%, 24% { content: "03:20"; }
+            25%, 99% { content: "00:00"; }
+        }
+
+        @keyframes pulseGreen {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.4)); }
+            50% { transform: scale(1.05); filter: drop-shadow(0 0 15px rgba(16, 185, 129, 0.8)); }
+        }
+
+        .ticking-timer-green {
+            color: #10b981;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
+        .chaos-items-container {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            perspective: 500px;
+            margin-top: 15px;
+        }
+
+        /* Premium Document Styling */
+        .doc-paper {
+            position: absolute;
+            width: 95px;
+            height: 125px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            box-shadow: 
+                0 8px 20px rgba(0,0,0,0.5),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            backdrop-filter: blur(8px);
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 5;
+            will-change: transform;
+        }
+
+        .doc-badge {
+            font-size: 0.5rem;
+            font-weight: 800;
+            padding: 3px 5px;
+            border-radius: 4px;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-red {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border: 0.5px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .badge-orange {
+            background: rgba(249, 115, 22, 0.2);
+            color: #fb923c;
+            border: 0.5px solid rgba(249, 115, 22, 0.4);
+        }
+
+        .doc-line {
+            height: 3px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 1px;
+        }
+
+        .doc-line.main-line {
+            width: 80%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .doc-line.small-line {
+            width: 60%;
+        }
+
+        .doc-footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .doc-signature {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .doc-stamp {
+            font-size: 0.45rem;
+            filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.6));
+        }
+
+        /* Keychain / Key Styling */
+        .keychain-item {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            padding: 6px 10px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+            z-index: 6;
+            will-change: transform;
+        }
+
+        .key-ring {
+            width: 10px;
+            height: 10px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 50%;
+        }
+
+        .key-tag {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.58rem;
+            font-weight: 700;
+            color: #fbbf24;
+            text-transform: uppercase;
+        }
+
+        .key-icon {
+            color: #fbbf24;
+            font-size: 0.75rem;
+            filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.5));
+            animation: swingKey 2s infinite ease-in-out alternate;
+        }
+
+        @keyframes swingKey {
+            0% { transform: rotate(-5deg); }
+            100% { transform: rotate(10deg); }
+        }
+
+        .paper-1 {
+            top: -10px;
+            left: 20px;
+            transform: rotate(-12deg) translateZ(15px);
+            animation: floatSlow1 4s infinite ease-in-out alternate;
+        }
+
+        .paper-2 {
+            top: 25px;
+            right: 25px;
+            transform: rotate(8deg) translateZ(5px);
+            animation: floatSlow2 4.5s infinite ease-in-out alternate;
+        }
+
+        .key-1 {
+            bottom: 15px;
+            left: 30px;
+            transform: rotate(5deg) translateZ(25px);
+            animation: floatSlow2 3.8s infinite ease-in-out alternate;
+        }
+
+        .key-2 {
+            bottom: -5px;
+            right: 40px;
+            transform: rotate(-10deg) translateZ(10px);
+            animation: floatSlow1 5s infinite ease-in-out alternate;
+        }
+
+        @keyframes floatSlow1 {
+            0% { transform: translateY(0) rotate(-10deg); }
+            100% { transform: translateY(-6px) rotate(-7deg); }
+        }
+
+        @keyframes floatSlow2 {
+            0% { transform: translateY(0) rotate(8deg); }
+            100% { transform: translateY(6px) rotate(11deg); }
+        }
+
+        .slide-subtitle {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 8px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            line-height: 1.4;
+            max-width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+
+        /* ── SLIDE 2: FLOATING 3D PHONE DASHBOARD ── */
+        .dashboard-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .phone-wrapper {
+            position: relative;
+            transform-style: preserve-3d;
+            animation: phoneTilt 8s infinite ease-in-out alternate;
+            will-change: transform;
+        }
+
+        @keyframes phoneTilt {
+            0% { transform: rotateY(-18deg) rotateX(12deg) rotateZ(-1deg); }
+            100% { transform: rotateY(-8deg) rotateX(6deg) rotateZ(1deg); }
+        }
+
+        .phone-shell {
+            width: 270px;
+            height: 440px;
+            background: #08090f;
+            border: 7px solid #1e293b;
+            border-radius: 40px;
+            padding: 18px 14px;
+            box-shadow: 
+                0 30px 60px -15px rgba(0, 0, 0, 0.85),
+                0 0 50px rgba(0, 0, 0, 0.5),
+                0 0 40px var(--primary-glow);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            position: relative;
+        }
+
+        /* Glass Reflection Overlay */
+        .phone-shell::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 60%);
+            border-radius: 33px;
+            pointer-events: none;
+        }
+
+        .phone-top-island {
+            width: 90px;
+            height: 16px;
+            background: #1e293b;
+            border-radius: 100px;
+            align-self: center;
+            margin-bottom: 2px;
+        }
+
+        .phone-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            padding: 0 4px;
+        }
+
+        .phone-header-row i {
+            margin-left: 3px;
+        }
+
+        .floating-widgets-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Glassmorphic Phone Widgets with suttle hover/tilt effects */
+        .phone-widget-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transform-style: preserve-3d;
+            transform: translateZ(10px);
+            will-change: transform;
+        }
+
+        .phone-widget-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 15%;
+            bottom: 15%;
+            width: 3.5px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .phone-widget-item.primary::before { background: var(--primary); box-shadow: 0 0 10px var(--primary); }
+        .phone-widget-item.green::before { background: var(--green); box-shadow: 0 0 10px var(--green); }
+        .phone-widget-item.yellow::before { background: var(--yellow); box-shadow: 0 0 10px var(--yellow); }
+
+        .phone-widget-item.primary { animation: cardPop1 32s infinite; }
+        .phone-widget-item.green { animation: cardPop2 32s infinite; }
+        .phone-widget-item.yellow { animation: cardPop3 32s infinite; }
+
+        @keyframes cardPop1 {
+            0%, 25% { transform: translateZ(10px); }
+            32%, 36% { transform: translateZ(28px) scale(1.03); background: rgba(255,255,255,0.04); box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+            43%, 100% { transform: translateZ(10px); }
+        }
+        @keyframes cardPop2 {
+            0%, 35% { transform: translateZ(10px); }
+            40%, 44% { transform: translateZ(28px) scale(1.03); background: rgba(255,255,255,0.04); box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+            50%, 100% { transform: translateZ(10px); }
+        }
+        @keyframes cardPop3 {
+            0%, 43% { transform: translateZ(10px); }
+            47%, 51% { transform: translateZ(28px) scale(1.03); background: rgba(255,255,255,0.04); box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+            56%, 100% { transform: translateZ(10px); }
+        }
+
+        .widget-inner-details {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .widget-lbl {
+            font-size: 0.58rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .widget-main-val {
+            font-size: 0.95rem;
+            font-weight: 800;
+        }
+
+        .widget-icon-box {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+        }
+
+        .phone-widget-item.primary .widget-icon-box { background: rgba(77, 121, 255, 0.1); color: var(--primary); }
+        .phone-widget-item.green .widget-icon-box { background: rgba(16, 185, 129, 0.1); color: var(--green); }
+        .phone-widget-item.yellow .widget-icon-box { background: rgba(245, 158, 11, 0.1); color: var(--yellow); }
+
+        /* Smooth Chart Animation */
+        .phone-chart-wrap {
+            background: linear-gradient(135deg, rgba(77, 121, 255, 0.06), rgba(255, 79, 216, 0.02));
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 18px;
+            padding: 12px 14px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transform: translateZ(5px);
+        }
+
+        .chart-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chart-lbl { font-size: 0.6rem; color: var(--text-muted); font-weight: 600; }
+        .chart-highlight-percent { font-size: 0.95rem; font-weight: 900; background: linear-gradient(90deg, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .chart-bars-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            height: 60px;
+            margin-top: 10px;
+        }
+
+        .c-bar-wrapper {
+            width: 14px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 3px;
+            height: 100%;
+            position: relative;
+        }
+
+        .c-bar-active-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, var(--primary), var(--accent));
+            border-radius: 3px;
+            transform-origin: bottom;
+            transform: scaleY(0.15);
+            animation: growChartBar 32s infinite cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform;
+        }
+
+        .c-bar-wrapper:nth-child(1) .c-bar-active-fill { animation-delay: 5.5s; --target-h: 0.45; }
+        .c-bar-wrapper:nth-child(2) .c-bar-active-fill { animation-delay: 5.6s; --target-h: 0.70; }
+        .c-bar-wrapper:nth-child(3) .c-bar-active-fill { animation-delay: 5.7s; --target-h: 0.55; }
+        .c-bar-wrapper:nth-child(4) .c-bar-active-fill { animation-delay: 5.8s; --target-h: 0.90; }
+        .c-bar-wrapper:nth-child(5) .c-bar-active-fill { animation-delay: 5.9s; --target-h: 0.80; }
+        .c-bar-wrapper:nth-child(6) .c-bar-active-fill { animation-delay: 6.0s; --target-h: 0.98; }
+
+        @keyframes growChartBar {
+            0%, 25% { transform: scaleY(0.15); }
+            35%, 48% { transform: scaleY(var(--target-h)); }
+            50%, 100% { transform: scaleY(0.15); }
+        }
+
+
+        /* ── SLIDE 3: PREMIUM PUSH NOTIFICATION TOAST ── */
+        .toast-position-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            transform: rotateX(-4deg);
+        }
+
+        .mac-toast-card {
+            background: rgba(12, 16, 29, 0.75);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            border-radius: 20px;
+            padding: 18px;
+            box-shadow: 
+                0 25px 50px -10px rgba(0, 0, 0, 0.65),
+                0 0 30px rgba(239, 68, 68, 0.08);
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+            transform: translate3d(0, 30px, 0);
+            opacity: 0;
+            animation: slideInToast 32s infinite cubic-bezier(0.175, 0.885, 0.32, 1.15);
+            will-change: transform, opacity;
+        }
+
+        @keyframes slideInToast {
+            0%, 50% { transform: translate3d(0, 30px, 0); opacity: 0; }
+            54%, 73% { transform: translate3d(0, 0, 0); opacity: 1; }
+            75%, 100% { transform: translate3d(0, -30px, 0); opacity: 0; }
+        }
+
+        .toast-top-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 8px;
+        }
+
+        .toast-system-badge {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--red);
+            padding: 3px 8px;
+            border-radius: 100px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.1);
+        }
+
+        .toast-system-badge i {
+            animation: pulseIcon 1.5s infinite;
+        }
+
+        @keyframes pulseIcon {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.9); }
+        }
+
+        .toast-inner-body {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .toast-icon-circle {
+            width: 38px;
+            height: 38px;
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--red);
+            font-size: 1.15rem;
+            flex-shrink: 0;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.1);
+        }
+
+        .toast-content-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .toast-headline {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .toast-desc-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+
+        /* Second auto-action confirmation card */
+        .toast-success-card {
+            background: rgba(12, 16, 29, 0.75);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-radius: 16px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+            backdrop-filter: blur(20px);
+            transform: translate3d(0, 30px, 0);
+            opacity: 0;
+            animation: slideInSuccess 32s infinite cubic-bezier(0.175, 0.885, 0.32, 1.15);
+            will-change: transform, opacity;
+        }
+
+        @keyframes slideInSuccess {
+            0%, 57% { transform: translate3d(0, 30px, 0); opacity: 0; }
+            61%, 73% { transform: translate3d(0, 0, 0); opacity: 1; }
+            75%, 100% { transform: translate3d(0, -30px, 0); opacity: 0; }
+        }
+
+        .toast-success-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .toast-success-txt {
+            font-size: 0.72rem;
+            color: var(--text-white);
+            font-weight: 600;
+        }
+
+
+        /* ── SLIDE 4: CALL TO ACTION OFFER ── */
+        /* ── SLIDE 4: CALL TO ACTION OFFER ── */
+        .cta-box-flex {
+            position: absolute;
+            right: 20px;
+            top: 45%;
+            transform: translate3d(0, -40%, 0);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 230px;
+            z-index: 10;
+            animation: s4BrandMotion 32s infinite ease-in-out;
+            will-change: transform, opacity;
+        }
+
+        .s4-title-anim {
+            animation: s4TitleMotion 32s infinite ease-in-out;
+            will-change: opacity, transform;
+        }
+
+        @keyframes s4TitleMotion {
+            0%, 74% { opacity: 0; transform: translateY(-20px); }
+            77%, 96% { opacity: 1; transform: translateY(0); }
+            98%, 100% { opacity: 0; transform: translateY(-20px); }
+        }
+
+        @keyframes s4BrandMotion {
+            0%, 84% { transform: translate3d(0, 60px, 0); opacity: 0; }
+            87%, 96% { transform: translate3d(0, -42%, 0); opacity: 1; }
+            98%, 100% { transform: translate3d(0, 60px, 0); opacity: 0; }
+        }
+
+        /* 3D Rotating Phone Container Slide 4 */
+        .s4-phone-container {
+            position: absolute;
+            left: 20px;
+            top: 45%;
+            width: 165px;
+            height: 270px;
+            transform-style: preserve-3d;
+            animation: s4PhoneMotion 32s infinite ease-in-out;
+            will-change: transform, opacity;
+            z-index: 5;
+        }
+
+        .s4-shell {
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.45);
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            border-radius: 28px;
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        @keyframes s4PhoneMotion {
+            0%, 74% { transform: translate3d(97.5px, 120px, -150px) rotateY(-180deg); opacity: 0; }
+            77% { transform: translate3d(97.5px, -45%, 0) rotateY(-30deg) rotateX(15deg); opacity: 1; }
+            80%, 83% { transform: translate3d(97.5px, -45%, 0) rotateY(25deg) rotateX(12deg) rotateZ(3deg); opacity: 1; }
+            87%, 96% { transform: translate3d(0, -42%, -100px) rotateY(-20deg) rotateX(10deg) rotateZ(-4deg); opacity: 0.55; }
+            98%, 100% { transform: translate3d(0, -42%, -150px) rotateY(-20deg); opacity: 0; }
+        }
+
+        .logo-3d-glow-shield {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transform-style: preserve-3d;
+            animation: logoHover3d 4s infinite ease-in-out alternate;
+            will-change: transform;
+        }
+
+        .brand-name-large {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: 2.5px;
+            background: linear-gradient(to right, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            transform: translateZ(10px);
+            margin-top: 5px;
+        }
+
+        @keyframes logoHover3d {
+            0% { transform: rotateY(-18deg) rotateX(10deg) translateY(0); }
+            100% { transform: rotateY(18deg) rotateX(-5deg) translateY(-8px); }
+        }
+
+        .logo-box-main {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 2.6rem;
+            color: #fff;
+            box-shadow: 
+                0 0 35px var(--primary-glow),
+                0 0 20px var(--accent-glow);
+            position: relative;
+        }
+
+        .logo-box-main::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            opacity: 0.4;
+            filter: blur(10px);
+            z-index: -1;
+        }
+
+        .slogan-text {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.58rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            text-align: center;
+            margin-top: -5px;
+            margin-bottom: 5px;
+            background: linear-gradient(to right, #94a3b8, #cbd5e1, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+            z-index: 10;
+        }
+
+        .btn-premium-action {
+            background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            padding: 14px 24px;
+            border-radius: 12px;
+            border: none;
+            font-size: 0.85rem;
+            letter-spacing: 0.8px;
+            box-shadow: 
+                0 10px 25px rgba(77, 121, 255, 0.45),
+                0 0 20px rgba(77, 121, 255, 0.2);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.2s;
+            will-change: transform;
+            animation: buttonGlowSweep 32s infinite;
+        }
+
+        @keyframes buttonGlowSweep {
+            0%, 89% { transform: scale(1); }
+            91% { transform: scale(0.95); } /* Press */
+            93%, 96% { transform: scale(1.04); } /* Pop */
+            98%, 100% { transform: scale(1); }
+        }
+
+        /* Shiny Metallic Gradient Sweep Effect */
+        .btn-premium-action::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+            transform: skewX(-20deg);
+            animation: shineSweep 4s infinite linear;
+        }
+
+        @keyframes shineSweep {
+            0% { left: -150%; }
+            50%, 100% { left: 150%; }
+        }
+
+        /* Virtual Cursor Click Pointer Simulation */
+        .virtual-cursor-pointer {
+            position: absolute;
+            font-size: 1.6rem;
+            color: #fff;
+            filter: drop-shadow(0 3px 8px rgba(0,0,0,0.6));
+            z-index: 200;
+            pointer-events: none;
+            opacity: 0;
+            transform: translate3d(360px, 260px, 0);
+            animation: runCursorAction 32s infinite cubic-bezier(0.25, 1, 0.5, 1);
+            will-change: transform, opacity;
+        }
+
+        @keyframes runCursorAction {
+            0%, 87% { transform: translate3d(340px, 260px, 0); opacity: 0; }
+            90% { transform: translate3d(250px, 190px, 0); opacity: 1; }
+            92% { transform: translate3d(242px, 182px, 0) scale(0.85); opacity: 1; } /* Click moment */
+            94% { transform: translate3d(250px, 190px, 0) scale(1); opacity: 1; }
+            96%, 100% { transform: translate3d(340px, 260px, 0); opacity: 0; }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="reels-wrapper">
+
+        <!-- ── 3D PERSPECTIVE BACKGROUND PATTERNS ── -->
+        <div class="ambient-glows">
+            <div class="glow-circle glow-1"></div>
+            <div class="glow-circle glow-2"></div>
+            <div class="glow-circle glow-3"></div>
+        </div>
+        <div class="grid-3d"></div>
+
+        <!-- ── FIXED TOP BRAND HEADER ── -->
+        <div class="brand-watermark">
+        <div class="brand-logo-mini">Z</div>
+        <span class="brand-name-mini">ZYRONOVA</span>
+    </div>
+
+    <!-- ── SLIDE 1: CHAOS PAIN ── -->
+    <div class="slide slide-1">
+        <div class="slide-title-container">
+            <h2 class="slide-title">
+                Zamanınızı Verimli<br/>
+                <span class="highlight-text highlight-primary">Yönetmek mi</span><br/>
+                İstiyorsunuz?
+            </h2>
+            <div class="slide-subtitle">Zyronova SaaS: Zamanın Değerini Bilen Teknoloji</div>
+        </div>
+
+        <div class="content-container">
+            <div class="chaos-pain-card">
+                <div class="timer-counter-box">
+                    <span class="timer-icon">⏳</span>
+                    <span class="timer-value ticking-timer-red"></span>
+                </div>
+                <div class="chaos-items-container">
+                    <!-- Document 1: Contract (Sözleşme) -->
+                    <div class="doc-paper paper-1">
+                        <div class="doc-badge badge-red">SÖZLEŞME</div>
+                        <div class="doc-line main-line"></div>
+                        <div class="doc-line small-line"></div>
+                        <div class="doc-line small-line"></div>
+                        <div class="doc-footer">
+                            <span class="doc-signature">✍️</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Document 2: Promissory Note (Senet) -->
+                    <div class="doc-paper paper-2">
+                        <div class="doc-badge badge-orange">SENET</div>
+                        <div class="doc-line main-line"></div>
+                        <div class="doc-line small-line"></div>
+                        <div class="doc-line small-line"></div>
+                        <div class="doc-footer">
+                            <span class="doc-stamp">🔴</span>
+                        </div>
+                    </div>
+
+                    <!-- Key 1: Keychain (Anahtar) -->
+                    <div class="keychain-item key-1">
+                        <div class="key-ring"></div>
+                        <div class="key-tag">Oto Anahtar</div>
+                        <i class="fa-solid fa-key key-icon"></i>
+                    </div>
+
+                    <!-- Key 2: Keychain (Anahtar) -->
+                    <div class="keychain-item key-2">
+                        <div class="key-ring"></div>
+                        <div class="key-tag">Araç Teslim</div>
+                        <i class="fa-solid fa-key key-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-footer-label">Manuel İşlere Son</div>
+    </div>
+
+    <!-- ── SLIDE 2: MOBİL DASHBOARD ── -->
+    <div class="slide slide-2">
+        <div class="slide-title-container">
+            <h2 class="slide-title">
+                3 Saniyede Dijital<br/>
+                <span class="highlight-text highlight-primary">Sözleşme ve Kolay</span><br/>
+                Yönetim
+            </h2>
+            <div class="slide-subtitle">...ve tüm filonuz tek bir güvenli panelde.</div>
+        </div>
+
+        <div class="content-container">
+            <div class="phone-wrapper">
+                <div class="timer-counter-box green" style="position: absolute; top: -45px; left: 50%; transform: translateX(-50%) translateZ(30px); width: 140px; margin: 0; z-index: 100;">
+                    <span class="timer-icon">⚡</span>
+                    <span class="timer-value ticking-timer-green">00:03</span>
+                </div>
+                <div class="phone-shell">
+                    <div class="phone-top-island"></div>
+                    <div class="phone-header-row">
+                        <span>Zyronova SaaS</span>
+                        <div>
+                            <i class="fa-solid fa-wifi"></i>
+                            <i class="fa-solid fa-battery-three-quarters"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="floating-widgets-list">
+                        <div class="phone-widget-item primary">
+                            <div class="widget-inner-details">
+                                <span class="widget-lbl">Toplam Filo</span>
+                                <span class="widget-main-val">24 Araç</span>
+                            </div>
+                            <div class="widget-icon-box">
+                                <i class="fa-solid fa-car"></i>
+                            </div>
+                        </div>
+                        <div class="phone-widget-item green">
+                            <div class="widget-inner-details">
+                                <span class="widget-lbl">Aktif Kiralama</span>
+                                <span class="widget-main-val">18 Adet</span>
+                            </div>
+                            <div class="widget-icon-box">
+                                <i class="fa-solid fa-key"></i>
+                            </div>
+                        </div>
+                        <div class="phone-widget-item yellow">
+                            <div class="widget-inner-details">
+                                <span class="widget-lbl">Aylık Net Kar</span>
+                                <span class="widget-main-val">142.500 TL</span>
+                            </div>
+                            <div class="widget-icon-box">
+                                <i class="fa-solid fa-wallet"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="phone-chart-wrap">
+                        <div class="chart-meta-row">
+                            <span class="chart-lbl">Doluluk Oranı</span>
+                            <span class="chart-highlight-percent">%82</span>
+                        </div>
+                        <div class="chart-bars-flex">
+                            <div class="c-bar-wrapper"><div class="c-bar-active-fill"></div></div>
+                            <div class="c-bar-wrapper"><div class="c-bar-active-fill"></div></div>
+                            <div class="c-bar-wrapper"><div class="c-bar-active-fill"></div></div>
+                            <div class="c-bar-wrapper"><div class="c-bar-active-fill"></div></div>
+                            <div class="c-bar-wrapper"><div class="c-bar-active-fill"></div></div>
+                            <div class="c-bar-wrapper"><div class="c-bar-active-fill"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-footer-label">Akıllı Yönetim</div>
+    </div>
+
+    <!-- ── SLIDE 3: AKILLI BİLDİRİM ── -->
+    <div class="slide slide-3">
+        <div class="slide-title-container">
+            <h2 class="slide-title">
+                Akıllı Gecikme<br/>
+                <span class="highlight-text highlight-accent">Takibi</span><br/>
+                Sistem Otomatik Devrede!
+            </h2>
+            <div class="slide-subtitle">Müşterilere otomatik hatırlatma, sistem kendiliğinden devrede.</div>
+        </div>
+
+        <div class="content-container">
+            <div class="toast-position-wrapper">
+                <div class="mac-toast-card">
+                    <div class="toast-top-meta">
+                        <span>ZYRONOVA SYSTEM ALERT</span>
+                        <div class="toast-system-badge">
+                            <i class="fa-solid fa-triangle-exclamation"></i> UYARI
+                        </div>
+                    </div>
+                    <div class="toast-inner-body">
+                        <div class="toast-icon-circle">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </div>
+                        <div class="toast-content-wrapper">
+                            <span class="toast-headline">⚠️ Geciken Teslimat Uyarısı</span>
+                            <span class="toast-desc-text">
+                                <b>34 ABC 123</b> plakalı aracın sözleşme süresi dolmuştur. Sistem otomatik devreye girdi.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="toast-success-card">
+                    <div class="toast-success-icon">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </div>
+                    <span class="toast-success-txt">Müşteriye uyarı e-postası gönderildi.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-footer-label">Akıllı Takip Asistanı</div>
+    </div>
+
+    <!-- ── SLIDE 4: CALL TO ACTION OFFER ── -->
+    <div class="slide slide-4">
+        <div class="slide-title-container s4-title-anim">
+            <h2 class="slide-title">
+                Lansmana Özel<br/>
+                <span class="highlight-text highlight-primary">14 Gün Ücretsiz</span><br/>
+                Hemen Başlayın!
+            </h2>
+        </div>
+
+        <div class="content-container" style="position: relative; perspective: 1000px; width: 100%; height: 100%;">
+            <!-- 3D Rotating Phone Container -->
+            <div class="s4-phone-container">
+                <div class="phone-shell s4-shell">
+                    <div class="phone-top-island"></div>
+                    <div class="phone-header-row">
+                        <span>Zyronova SaaS</span>
+                        <div>
+                            <i class="fa-solid fa-wifi"></i>
+                            <i class="fa-solid fa-battery-three-quarters"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="floating-widgets-list" style="margin-top: 5px;">
+                        <div class="phone-widget-item primary" style="padding: 10px 12px; margin-bottom: 5px; transform: translateZ(10px);">
+                            <div class="widget-inner-details">
+                                <span class="widget-lbl" style="font-size: 0.55rem;">Hızlı Kurulum</span>
+                                <span class="widget-main-val" style="font-size: 0.85rem;">Aktif</span>
+                            </div>
+                            <div class="widget-icon-box" style="width: 28px; height: 28px; font-size: 0.8rem;">
+                                <i class="fa-solid fa-bolt"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="phone-widget-item green" style="padding: 10px 12px; transform: translateZ(10px);">
+                            <div class="widget-inner-details">
+                                <span class="widget-lbl" style="font-size: 0.55rem;">Verimlilik</span>
+                                <span class="widget-main-val" style="font-size: 0.85rem;">%99.8</span>
+                            </div>
+                            <div class="widget-icon-box" style="width: 28px; height: 28px; font-size: 0.8rem;">
+                                <i class="fa-solid fa-chart-line"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Brand Logo & Offer details overlay -->
+            <div class="cta-box-flex">
+                <div class="logo-3d-glow-shield">
+                    <div class="logo-box-main">Z</div>
+                    <div class="brand-name-large">ZYRONOVA</div>
+                </div>
+                <div class="slogan-text">Zamanın Değerini Bilen Teknoloji</div>
+                <button class="btn-premium-action">
+                    Şimdi Ücretsiz Dene <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <!-- Click pointer animation cursor -->
+            <i class="fa-solid fa-arrow-pointer virtual-cursor-pointer"></i>
+        </div>
+
+        <div class="slide-footer-label">zyronova.com | Link Profilde</div>
+    </div>
+</div>
+
+</body>
+</html>

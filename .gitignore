@@ -1,34 +1,39 @@
+# Dependencies & Virtual Environments
 node_modules/
+tur_takip_otomasyonu/server/node_modules/
+tur_takip_otomasyonu/client/node_modules/
+.venv/
+venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Windows Local Binaries / Archives
+rent_a_car/Redis*/
+*.zip
+*.rar
+*.exe
+*.msi
+
+# Environment & Secrets
 .env
-.DS_Store
-scratch/
-npm-debug.log
-yarn-error.log
-.gemini/
-
-# Güvenlik: Debug ve log dosyaları
-*.txt
-*.log
-server/check_*.js
-server/fix_*.js
-server/reset_*.js
-server/seed_*.js
-server/test_*.js
-server/update_*.js
-server/cleanup*.js
-server/cleanup*.bat
-server/scratch/
-
-# Production build
-client/dist/
-dist/
-
-# Env files (Güvenlik için çok önemli)
 *.env*
-.env.development
-.env.production
+!.env.example
 
-# Yanlışlıkla oluşan veya büyük dosyalar
-client/client/
-client/5173
-*.mp4
+# Runtime SQLite Databases (auto-created and seeded on startup)
+rent_a_car/data/sqlite/*.db
+rent_a_car/data/sqlite/*.db-*
+tur_takip_otomasyonu/server/data/*.sqlite
+tur_takip_otomasyonu/server/data/*.sqlite-*
+tur_takip_otomasyonu/server/data/sqlite/*.db
+tur_takip_otomasyonu/server/data/sqlite/*.db-*
+
+# Logs, Temp & OS files
+*.log
+logs/
+rent_a_car/logs/
+scratch/
+.DS_Store
+Thumbs.db

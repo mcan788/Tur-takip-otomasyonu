@@ -1,0 +1,1 @@
+ERROR during migration: [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Invalid object name 'Tours'.

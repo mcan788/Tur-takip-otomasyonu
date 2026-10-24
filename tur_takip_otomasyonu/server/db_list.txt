@@ -1,0 +1,12 @@
+[
+  {
+    "AgencyID": 2,
+    "Username": "Ali DEMIR",
+    "AgencyDBName": "Legacy_DB_2"
+  },
+  {
+    "AgencyID": 1012,
+    "Username": "OkurcalarGrandBazaar",
+    "AgencyDBName": "Agency_OkurcalarGrandBazaar_1778917890197_DB"
+  }
+]
