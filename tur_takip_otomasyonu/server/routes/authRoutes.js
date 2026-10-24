@@ -18,7 +18,7 @@ const { authenticate, attachDB } = require('../middleware/auth');
 router.get('/captcha', getCaptcha);
 router.post('/login', attachDB, login);
 router.post('/demo-login', attachDB, demoLogin);
-router.post('/license-sign', authenticate, signLicense);
+router.post('/license-sign', signLicense);
 router.post('/2fa/login', verify2FALogin);
 router.get('/2fa/setup', authenticate, setup2FA);
 router.post('/2fa/activate', authenticate, activate2FA);

@@ -3319,7 +3319,7 @@
                         <p style="color: var(--muted); font-size: 0.85rem; line-height: 1.5; margin-bottom: 16px;">Araç kiralama operasyonları, sözleşmeler, hasar durumları, telemetri ve ciro analiz modüllerinin tamamı açık olarak simüle edilir.</p>
                         
                         <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(77, 121, 255, 0.2); border-radius: 14px; padding: 10px 15px; font-size: 0.75rem; color: #b6c1ea; display: flex; flex-direction: column; gap: 4px; pointer-events: auto;" onclick="event.stopPropagation();">
-                            <div style="display: flex; justify-content: space-between;"><span><strong>Kullanıcı Adı:</strong> Rent A Car demo</span> <span style="cursor: pointer; opacity: 0.7;" onclick="navigator.clipboard.writeText('Rent A Car demo'); alert('Kullanıcı adı kopyalandı!')"><i class="fas fa-copy"></i></span></div>
+                            <div style="display: flex; justify-content: space-between;"><span><strong>Kullanıcı Adı:</strong> RentACarDemo</span> <span style="cursor: pointer; opacity: 0.7;" onclick="navigator.clipboard.writeText('RentACarDemo'); alert('Kullanıcı adı kopyalandı!')"><i class="fas fa-copy"></i></span></div>
                             <div style="display: flex; justify-content: space-between;"><span><strong>Şifre:</strong> demo123</span> <span style="cursor: pointer; opacity: 0.7;" onclick="navigator.clipboard.writeText('demo123'); alert('Şifre kopyalandı!')"><i class="fas fa-copy"></i></span></div>
                         </div>
                     </div>
@@ -4159,7 +4159,22 @@
         }
 
         // ===== DEMO SIMULATION OVERLAY FUNCTIONS =====
+        function resetDemoModalState() {
+            const overlay = document.getElementById("demoOverlay");
+            if (!overlay) return;
+            const container = overlay.querySelector(".demo-modal-container");
+            if (container) {
+                container.style.opacity = "1";
+                container.style.pointerEvents = "auto";
+            }
+        }
+
+        window.addEventListener("pageshow", () => {
+            resetDemoModalState();
+        });
+
         function openDemoSimulation() {
+            resetDemoModalState();
             const overlay = document.getElementById("demoOverlay");
             overlay.style.display = "flex";
             setTimeout(() => {
@@ -4169,6 +4184,7 @@
         }
 
         function closeDemoSimulation() {
+            resetDemoModalState();
             const overlay = document.getElementById("demoOverlay");
             overlay.classList.remove("active");
             overlay.style.opacity = "0";
@@ -4202,6 +4218,7 @@
                 showToast("Simülasyon Başlatıldı! Yönlendiriliyorsunuz...", "success");
                 
                 setTimeout(() => {
+                    resetDemoModalState();
                     if (moduleName === "RENT_A_CAR") {
                         // Rent A Car: Python sunucusuna yönlendir
                         window.location.href = `${API_BASE}/sso-login?token=${data.token}`;
@@ -4216,11 +4233,10 @@
                         
                         window.location.href = redirectUrl;
                     }
-                }, 1000);
+                }, 600);
             } catch (err) {
                 showToast("🚨 Simülasyon Hatası: " + err.message, "error");
-                container.style.opacity = "1";
-                container.style.pointerEvents = "auto";
+                resetDemoModalState();
             }
         }
 
