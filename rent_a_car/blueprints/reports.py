@@ -64,23 +64,28 @@ def excel_export(type):
         flash('Veritabanı bağlantısı kurulamadı.', 'error')
         return redirect(url_for('reports.excel_page'))
     
-    from extensions import get_tenant_engine
-    import pandas as pd
-    tenant_engine = get_tenant_engine(g.current_company.subdomain)
-    
+    from openpyxl import Workbook
     output = BytesIO()
-    writer = pd.ExcelWriter(output, engine='xlsxwriter')
+    wb = Workbook()
+    ws = wb.active
+    ws.title = 'Sheet1'
+
     if type == 'araclar':
-        df = pd.read_sql(ts.query(Vehicle).statement, tenant_engine)
+        rows = ts.query(Vehicle).filter_by(is_deleted=False).all()
+        cols = [c.name for c in Vehicle.__table__.columns]
     elif type == 'kiralamalar':
-        df = pd.read_sql(ts.query(Rental).statement, tenant_engine)
+        rows = ts.query(Rental).all()
+        cols = [c.name for c in Rental.__table__.columns]
     else:
         return "Invalid type", 400
-    
-    df.to_excel(writer, index=False, sheet_name='Sheet1')
-    writer.close()
+
+    ws.append(cols)
+    for row in rows:
+        ws.append([getattr(row, col, '') for col in cols])
+
+    wb.save(output)
     output.seek(0)
-    
+
     return send_file(output, as_attachment=True, download_name=f"{type}_{datetime.now().strftime('%Y%m%d')}.xlsx")
 
 @reports_bp.route('/excel/import', methods=['POST'])

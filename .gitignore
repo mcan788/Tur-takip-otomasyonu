@@ -3,6 +3,8 @@ node_modules/
 tur_takip_otomasyonu/server/node_modules/
 tur_takip_otomasyonu/client/node_modules/
 .venv/
+.pydeps/
+rent_a_car/.pydeps/
 venv/
 env/
 ENV/

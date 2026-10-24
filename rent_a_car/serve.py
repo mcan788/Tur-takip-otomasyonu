@@ -1,5 +1,11 @@
 import os
+import sys
 import logging
+
+_pydeps = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.pydeps')
+if os.path.isdir(_pydeps) and _pydeps not in sys.path:
+    sys.path.insert(0, _pydeps)
+
 from app import app
 
 logging.basicConfig(level=logging.INFO)
