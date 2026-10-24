@@ -1,6 +1,7 @@
 import os
 import re
 import time
+from config import Config
 from flask import Flask, render_template, request, redirect, url_for, g, current_app, session, flash
 from flask_login import current_user, logout_user
 from extensions import db, login_manager, init_extensions, csrf, get_tenant_session
@@ -9,7 +10,6 @@ try:
 except ImportError:
     Migrate = None
 from utils.helpers import get_real_ip
-from config import Config
 from models import Company, User, Vehicle, Rental, AuditLog
 from datetime import datetime, timedelta
 import threading

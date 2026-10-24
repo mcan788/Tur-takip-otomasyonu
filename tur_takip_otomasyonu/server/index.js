@@ -72,6 +72,7 @@ async function startPythonBackend() {
         ...getPydepsEnv(),
         PYTHON_PORT: String(PYTHON_PORT),
         JWT_SECRET: process.env.JWT_SECRET,
+        ENCRYPTION_KEY: process.env.ENCRYPTION_KEY || '9u3g8htIZALnQwM61s_LvKkYkYN-1YdlCaMgksKxiUQ=',
         PYTHONIOENCODING: 'utf-8'
     };
 

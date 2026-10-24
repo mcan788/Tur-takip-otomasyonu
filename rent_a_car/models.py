@@ -12,9 +12,16 @@ from dotenv import load_dotenv
 import json
 
 load_dotenv()
-_ENCRYPTION_KEY = os.getenv('ENCRYPTION_KEY', 'fallback-zyronova-aes-key-32bytes!')
+_DEFAULT_FERNET_KEY = '9u3g8htIZALnQwM61s_LvKkYkYN-1YdlCaMgksKxiUQ='
+if not os.getenv('ENCRYPTION_KEY'):
+    os.environ['ENCRYPTION_KEY'] = _DEFAULT_FERNET_KEY
+_ENCRYPTION_KEY = os.getenv('ENCRYPTION_KEY', _DEFAULT_FERNET_KEY)
 
-_fernet_cipher = Fernet(_ENCRYPTION_KEY.encode('utf-8'))
+try:
+    _fernet_cipher = Fernet(_ENCRYPTION_KEY.encode('utf-8'))
+except Exception:
+    os.environ['ENCRYPTION_KEY'] = _DEFAULT_FERNET_KEY
+    _fernet_cipher = Fernet(_DEFAULT_FERNET_KEY.encode('utf-8'))
 
 def encrypt_pii(text):
     if not text: return text

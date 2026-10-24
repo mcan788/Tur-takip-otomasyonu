@@ -7,7 +7,6 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "postinstall": "node setupPython.js",
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
