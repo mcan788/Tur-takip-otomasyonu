@@ -924,6 +924,7 @@
       });
     }
   </script>
+  <script src="{{ url_for('static', filename='js/chart.min.js') }}"></script>
   {% block scripts %}{% endblock %}
   
   {% if current_user.is_authenticated %}
@@ -976,8 +977,6 @@
   </style>
   {% endif %}
   <script src="{{ url_for('static', filename='js/kvkk_banner.js') }}" defer></script>
-  <!-- Chart.js: loaded asynchronously to avoid blocking FCP/LCP -->
-  <script src="{{ url_for('static', filename='js/chart.min.js') }}" async></script>
 </body>
 
 </html>

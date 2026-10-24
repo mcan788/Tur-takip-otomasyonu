@@ -91,12 +91,12 @@
         <div id="customDateRange" class="flex gap-4 items-end" style="display:{% if filter_type in ['ozel', 'karsilastirma'] %}flex{% else %}none{% endif %};">
           <div class="form-group" style="min-width: 160px;">
             <label class="text-xs font-semibold uppercase tracking-wider text-muted mb-1 block">Başlangıç Tarihi</label>
-            <input type="date" name="start" value="{{ start_date }}" class="form-input w-full" max="2099-12-31">
+            <input type="date" name="start" value="{{ start_date or '' }}" class="form-input w-full" max="2099-12-31">
           </div>
           
           <div class="form-group" style="min-width: 160px;">
             <label class="text-xs font-semibold uppercase tracking-wider text-muted mb-1 block">Bitiş Tarihi</label>
-            <input type="date" name="end" value="{{ end_date }}" class="form-input w-full" max="2099-12-31">
+            <input type="date" name="end" value="{{ end_date or '' }}" class="form-input w-full" max="2099-12-31">
           </div>
         </div>
 

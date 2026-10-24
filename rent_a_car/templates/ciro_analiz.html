@@ -235,8 +235,13 @@
   }
 
   // Initialize on load
+  function waitForChart(cb, attempts = 0) {
+    if (window.Chart) { cb(); }
+    else if (attempts < 40) { setTimeout(() => waitForChart(cb, attempts + 1), 100); }
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
-    updateMultiCurrencyChart();
+    waitForChart(updateMultiCurrencyChart);
   });
 </script>
 {% endblock %}

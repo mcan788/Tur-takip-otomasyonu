@@ -518,7 +518,7 @@ def create_app(config_class=Config):
         response.headers['Access-Control-Allow-Methods'] = 'GET,PUT,POST,DELETE,OPTIONS'
         response.headers['Content-Security-Policy'] = (
             "default-src 'self'; "
-            "connect-src 'self' https://cdn.jsdelivr.net https://*.tile.openstreetmap.org https://nominatim.openstreetmap.org https://photon.komoot.io https://geocode.arcgis.com; "
+            "connect-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://*.tile.openstreetmap.org https://nominatim.openstreetmap.org https://photon.komoot.io https://geocode.arcgis.com; "
             "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; "
             "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; "
             "font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; "
