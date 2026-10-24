@@ -226,12 +226,13 @@ def get_top_10_details():
 
     # En yüksek getiri sağlayan araçları bul (ham SQL - ORM decrypt yükünden kaçın)
     top_rows = ts.execute(sa_text("""
-        SELECT TOP 10 plaka, marka, model,
+        SELECT plaka, marka, model,
                COUNT(id) as cnt,
                SUM(toplamFiyat) as total
         FROM rentals
         GROUP BY plaka, marka, model
         ORDER BY SUM(toplamFiyat) DESC
+        LIMIT 10
     """)).fetchall()
     
     result = []
@@ -279,7 +280,7 @@ def get_top_10_details():
 
         # Son 5 kiralama - şifreli tcKimlik/ehliyetNo sütunlarını ALMA
         rentals_raw = ts.execute(sa_text("""
-            SELECT TOP 5 id, plaka, marka, model, musteriAdi, isim, soyisim,
+            SELECT id, plaka, marka, model, musteriAdi, isim, soyisim,
                    uyruk, baslangicTarihi, bitisTarihi, kiralamaSuresi,
                    alinistaKm, verilisteKm, kullanilanKm,
                    paraBirimi, gunlukFiyat, toplamFiyat, kar,
@@ -287,6 +288,7 @@ def get_top_10_details():
             FROM rentals
             WHERE plaka = :plaka
             ORDER BY baslangicTarihi DESC
+            LIMIT 5
         """), {'plaka': plaka}).fetchall()
 
         rentals_list = []
@@ -300,10 +302,11 @@ def get_top_10_details():
 
         # Son 10 gider
         expenses_raw = ts.execute(sa_text("""
-            SELECT TOP 10 id, tutar, paraBirimi, tarih, gider_tipi, notlar
+            SELECT id, tutar, paraBirimi, tarih, gider_tipi, notlar
             FROM vehicle_expenses
             WHERE plaka = :plaka
             ORDER BY tarih DESC
+            LIMIT 10
         """), {'plaka': plaka}).fetchall()
 
         expenses_list = [
@@ -672,12 +675,12 @@ def get_report_stats(start_date=None, end_date=None):
 
     # ── Market Analysis ───────────────────────────────────────────────
     market_rows = ts.execute(sa_text(
-        "SELECT TOP 5 uyruk, COUNT(id) as cnt FROM rentals GROUP BY uyruk ORDER BY COUNT(id) DESC"
+        "SELECT uyruk, COUNT(id) as cnt FROM rentals GROUP BY uyruk ORDER BY COUNT(id) DESC LIMIT 5"
     )).fetchall()
     market_analysis = []
     for m in market_rows:
         top_v = ts.execute(sa_text(
-            "SELECT TOP 1 plaka FROM rentals WHERE uyruk=:u GROUP BY plaka ORDER BY COUNT(id) DESC"
+            "SELECT plaka FROM rentals WHERE uyruk=:u GROUP BY plaka ORDER BY COUNT(id) DESC LIMIT 1"
         ), {'u': m[0]}).fetchone()
         market_analysis.append({'uyruk': m[0], 'count': m[1],
                                  'top_vehicle': top_v[0] if top_v else '-'})
@@ -745,7 +748,7 @@ def get_report_data(start_date=None, end_date=None, page=1, per_page=15):
         FROM rentals
         {where_sql}
         ORDER BY baslangicTarihi DESC
-        OFFSET :offset_val ROWS FETCH NEXT :fetch_val ROWS ONLY
+        LIMIT :fetch_val OFFSET :offset_val
     """), params_page).fetchall()
 
     rental_keys = ['id','plaka','marka','model','musteriAdi','isim','soyisim','uyruk','kurumAdi',
