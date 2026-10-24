@@ -4,7 +4,8 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require('path');
 const fs = require('fs');
-const { spawn } = require('child_process');
+const http = require('http');
+const { spawn, execSync } = require('child_process');
 
 // express-rate-limit: Kurulu değilse uyarı ver, fallback ile devam et
 let rateLimit;
@@ -27,11 +28,64 @@ const app = express();
 app.set('trust proxy', 1);
 
 const PORT = process.env.PORT || 3000;
-const PYTHON_PORT = process.env.PYTHON_PORT || '8080';
-const PYTHON_TARGET = `http://127.0.0.1:${PYTHON_PORT}`;
+const PYTHON_PORT = parseInt(process.env.PYTHON_PORT || '8080', 10);
 
 // ─── AUTO-START PYTHON RENT A CAR BACKEND (WAITRESS) ───
 let pythonProcess = null;
+let isInstallingPythonDeps = false;
+
+function resolvePythonCommand(rentACarDir) {
+    const winVenvPython = path.resolve(__dirname, '../../.venv/Scripts/python.exe');
+    const linuxVenvPython = path.resolve(__dirname, '../../.venv/bin/python');
+    if (fs.existsSync(winVenvPython)) return winVenvPython;
+    if (fs.existsSync(linuxVenvPython)) return linuxVenvPython;
+    return process.env.PYTHON_BIN || (process.platform === 'win32' ? 'python' : 'python3');
+}
+
+function ensurePythonEnvironment(rentACarDir) {
+    let pyCmd = resolvePythonCommand(rentACarDir);
+    try {
+        execSync(`"${pyCmd}" -c "import flask, flask_sqlalchemy, flask_login, flask_wtf, jwt, cryptography, pyotp, bcrypt"`, {
+            stdio: 'ignore'
+        });
+        return pyCmd;
+    } catch (_) {
+        if (isInstallingPythonDeps) return pyCmd;
+        isInstallingPythonDeps = true;
+        console.log('[Python Gateway] Python paketleri eksik, otomatik kuruluyor...');
+        const rootDir = path.resolve(__dirname, '../..');
+        const reqFile = path.join(rentACarDir, 'requirements.txt');
+        try {
+            if (process.platform !== 'win32') {
+                const venvDir = path.join(rootDir, '.venv');
+                if (!fs.existsSync(path.join(venvDir, 'bin/python'))) {
+                    try {
+                        execSync(`python3 -m venv "${venvDir}"`, { stdio: 'inherit' });
+                    } catch (ve) {
+                        console.warn('[Python Gateway] venv oluşturulamadı, --user ile devam edilecek:', ve.message);
+                    }
+                }
+                if (fs.existsSync(path.join(venvDir, 'bin/pip'))) {
+                    execSync(`"${path.join(venvDir, 'bin/pip')}" install --no-cache-dir -r "${reqFile}"`, { stdio: 'inherit' });
+                    isInstallingPythonDeps = false;
+                    return path.join(venvDir, 'bin/python');
+                }
+                try {
+                    execSync(`pip3 install --no-cache-dir --break-system-packages -r "${reqFile}"`, { stdio: 'inherit' });
+                } catch (_) {
+                    execSync(`pip3 install --no-cache-dir --user -r "${reqFile}"`, { stdio: 'inherit' });
+                }
+            } else {
+                execSync(`pip install -r "${reqFile}"`, { stdio: 'inherit' });
+            }
+        } catch (installErr) {
+            console.error('[Python Gateway] Otomatik pip kurulum uyarısı:', installErr.message);
+        }
+        isInstallingPythonDeps = false;
+        return resolvePythonCommand(rentACarDir);
+    }
+}
+
 function startPythonBackend() {
     if (process.env.SKIP_PYTHON_SPAWN === 'true') return;
 
@@ -42,12 +96,7 @@ function startPythonBackend() {
         return;
     }
 
-    // Venv varsa onu kullan, yoksa sistem python/python3 kullan
-    const winVenvPython = path.resolve(__dirname, '../../.venv/Scripts/python.exe');
-    const linuxVenvPython = path.resolve(__dirname, '../../.venv/bin/python');
-    let pythonCmd = process.env.PYTHON_BIN || (process.platform === 'win32' ? 'python' : 'python3');
-    if (fs.existsSync(winVenvPython)) pythonCmd = winVenvPython;
-    else if (fs.existsSync(linuxVenvPython)) pythonCmd = linuxVenvPython;
+    const pythonCmd = ensurePythonEnvironment(rentACarDir);
 
     console.log(`[Python Gateway] Rent A Car servisi başlatılıyor (${pythonCmd} serve.py -> 127.0.0.1:${PYTHON_PORT})...`);
     pythonProcess = spawn(pythonCmd, ['serve.py'], {
@@ -81,9 +130,7 @@ process.on('exit', () => {
     }
 });
 
-// ─── REVERSE PROXY: RENT A CAR (FLASK) ROTALARI ───
-const { createProxyMiddleware } = require('http-proxy-middleware');
-
+// ─── NATIVE REVERSE PROXY: RENT A CAR (FLASK) ROTALARI ───
 const PYTHON_PATH_PREFIXES = [
     '/py-api',
     '/api/diagnostics',
@@ -117,6 +164,7 @@ const PYTHON_PATH_PREFIXES = [
 ];
 
 const shouldProxyToPython = (pathname, req) => {
+    if (!pathname || pathname === '/') return false;
     if (pathname === '/sso-login') {
         const fullUrl = req.originalUrl || req.url || '';
         return req.method === 'POST' || fullUrl.includes('token=');
@@ -126,22 +174,61 @@ const shouldProxyToPython = (pathname, req) => {
     );
 };
 
-app.use(
-    createProxyMiddleware({
-        target: PYTHON_TARGET,
-        changeOrigin: false,
-        xfwd: true,
-        pathFilter: shouldProxyToPython,
-        on: {
-            error: (err, req, res) => {
-                console.error(`[Proxy Error] ${req.method} ${req.url} -> ${err.message}`);
-                if (!res.headersSent) {
-                    res.status(502).send('Rent A Car servisi şu anda hazırlanıyor, lütfen birkaç saniye sonra sayfayı yenileyin.');
-                }
+function forwardToPython(req, res, bodyBuffer, attempt = 1) {
+    const forwardHeaders = {
+        ...req.headers,
+        'x-forwarded-host': req.headers['x-forwarded-host'] || req.headers.host || '',
+        'x-forwarded-proto': req.headers['x-forwarded-proto'] || req.protocol || 'http',
+        'x-forwarded-for': req.headers['x-forwarded-for'] || req.ip || '127.0.0.1'
+    };
+
+    const options = {
+        hostname: '127.0.0.1',
+        port: PYTHON_PORT,
+        path: req.originalUrl || req.url,
+        method: req.method,
+        headers: forwardHeaders
+    };
+
+    const proxyReq = http.request(options, (proxyRes) => {
+        res.status(proxyRes.statusCode || 200);
+        Object.entries(proxyRes.headers).forEach(([key, val]) => {
+            if (val !== undefined) {
+                res.setHeader(key, val);
+            }
+        });
+        proxyRes.pipe(res);
+    });
+
+    proxyReq.on('error', (err) => {
+        if (attempt < 10) {
+            setTimeout(() => forwardToPython(req, res, bodyBuffer, attempt + 1), 1000);
+        } else {
+            console.error(`[Proxy Error] ${req.method} ${req.originalUrl} -> ${err.message}`);
+            if (!res.headersSent) {
+                res.status(502).send('Rent A Car servisi şu anda hazırlanıyor, lütfen birkaç saniye sonra sayfayı yenileyin.');
             }
         }
-    })
-);
+    });
+
+    if (bodyBuffer && bodyBuffer.length > 0) {
+        proxyReq.write(bodyBuffer);
+    }
+    proxyReq.end();
+}
+
+app.use((req, res, next) => {
+    if (!shouldProxyToPython(req.path, req)) {
+        return next();
+    }
+    const chunks = [];
+    req.on('data', (chunk) => chunks.push(chunk));
+    req.on('end', () => {
+        const bodyBuffer = chunks.length > 0 ? Buffer.concat(chunks) : null;
+        forwardToPython(req, res, bodyBuffer, 1);
+    });
+    req.on('error', (err) => next(err));
+});
 
 // ─── CORS ───
 const allowedOrigins = (
@@ -269,9 +356,6 @@ app.use((err, req, res, next) => {
 app.listen(PORT, async () => {
     console.log(`[Server] ${PORT} portunda çalışıyor. Ortam: ${process.env.NODE_ENV || 'development'}`);
 
-    // Python Rent A Car sunucusunu başlat
-    startPythonBackend();
-
     try {
         await initDatabase();
         const { initMaster } = require('./config/db');
@@ -279,6 +363,9 @@ app.listen(PORT, async () => {
     } catch (err) {
         console.error('[Server Start Error]:', err.message);
     }
+
+    // Python Rent A Car sunucusunu başlat
+    startPythonBackend();
 });
 
 process.on('unhandledRejection', (reason) => {

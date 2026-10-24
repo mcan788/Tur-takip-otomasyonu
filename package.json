@@ -7,9 +7,10 @@
     "node": ">=22.5.0"
   },
   "scripts": {
-    "install:all": "npm --prefix tur_takip_otomasyonu/server install --omit=optional && npm --prefix tur_takip_otomasyonu/client install && pip install -r rent_a_car/requirements.txt",
+    "postinstall": "npm --prefix tur_takip_otomasyonu/server install --omit=optional",
+    "install:all": "npm --prefix tur_takip_otomasyonu/server install --omit=optional && npm --prefix tur_takip_otomasyonu/client install",
     "build:client": "npm --prefix tur_takip_otomasyonu/client run build",
-    "build": "npm --prefix tur_takip_otomasyonu/server install --omit=optional && npm --prefix tur_takip_otomasyonu/client install && npm --prefix tur_takip_otomasyonu/client run build && pip install -r rent_a_car/requirements.txt",
+    "build": "npm --prefix tur_takip_otomasyonu/server install --omit=optional && npm --prefix tur_takip_otomasyonu/client install && npm --prefix tur_takip_otomasyonu/client run build",
     "start": "node tur_takip_otomasyonu/server/index.js"
   }
 }
